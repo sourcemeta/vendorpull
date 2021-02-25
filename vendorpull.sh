@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -o errexit
+DEPENDENCY="$1"
 set -o nounset
 
 DEPENDENCIES_FILE="$PWD/DEPENDENCIES"
@@ -68,8 +69,20 @@ install_dependency() {
   mv "$TEMPORARY_DIRECTORY/$NAME" "$OUTPUT_DIRECTORY"
 }
 
-while read -r dependency
-do
-  install_dependency "$dependency"
-done < "$DEPENDENCIES_FILE"
-temporary_directory_clean
+if [ -n "$DEPENDENCY" ]
+then
+  DEFINITION="$(grep "^$DEPENDENCY" < "$DEPENDENCIES_FILE" | head -n 1)"
+  if [ -z "$DEFINITION" ]
+  then
+    echo "Could not find a dependency named: $DEPENDENCY" 1>&2
+    exit 1
+  fi
+
+  install_dependency "$DEFINITION"
+else
+  while read -r dependency
+  do
+    install_dependency "$dependency"
+  done < "$DEPENDENCIES_FILE"
+  temporary_directory_clean
+fi
