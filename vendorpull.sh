@@ -8,6 +8,12 @@ DEPENDENCIES_FILE="$PWD/DEPENDENCIES"
 VENDOR_DIRECTORY="$PWD/vendor"
 mkdir -p "$VENDOR_DIRECTORY"
 
+if ! command -v git > /dev/null
+then
+  echo "You must install git in order to use this tool" 1>&2
+  exit 1
+fi
+
 TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull)"
 temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
