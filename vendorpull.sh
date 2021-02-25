@@ -12,6 +12,7 @@ temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
 }
 
+# shellcheck disable=SC2039
 trap temporary_directory_clean ERR
 
 if [ ! -f "$DEPENDENCIES_FILE" ]
