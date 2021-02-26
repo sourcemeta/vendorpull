@@ -1,12 +1,21 @@
 name: Test
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+
+    - name: Dependencies
+      if: runner.os == 'macos'
+      run: brew install shellcheck
+
     - name: Lint
       run: make lint
 
