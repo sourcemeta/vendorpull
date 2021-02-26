@@ -15,6 +15,7 @@ then
 fi
 
 TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
+echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
 temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
 }
@@ -53,6 +54,8 @@ install_dependency() {
   REPOSITORY="$(echo "$1" | cut -d ' ' -f 2)"
   REVISION="$(echo "$1" | cut -d ' ' -f 3)"
 
+  echo "Updating $NAME..."
+
   assert_defined "$NAME" "ERROR: Missing dependency name"
   assert_defined "$REPOSITORY" "$NAME: ERROR: Missing repository URL"
   assert_defined "$REVISION" "$NAME: ERROR: Missing git revision"
@@ -85,6 +88,7 @@ then
 
   install_dependency "$DEFINITION"
 else
+  echo "Reading DEPENDENCIES files..."
   while read -r dependency
   do
     install_dependency "$dependency"
