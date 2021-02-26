@@ -8,7 +8,7 @@ Why would I want to vendor my dependencies?
 -------------------------------------------
 
 Many high-profile projects, such as Node.js and
-[Golang](https://blog.filippo.io/most-go-tools-now-work-with-go15vendorexperiment/)
+[Golang](https://blog.filippo.io/most-go-tools-now-work-with-go15vendorexperiment/),
 vendor their dependencies for some of the following reasons:
 
 - Including dependencies as part of your `git` repository ensures that your
