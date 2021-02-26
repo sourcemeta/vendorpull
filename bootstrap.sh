@@ -46,6 +46,6 @@ HASH="$(git rev-parse HEAD)"
 echo "vendorpull $VENDORPULL_REPOSITORY $HASH" > "$DEPENDENCIES_FILE"
 
 cd "$INSTALLATION_DIRECTORY"
-"$TEMPORARY_DIRECTORY/vendorpull.sh"
+"$TEMPORARY_DIRECTORY/update"
 
 echo "Done!"
