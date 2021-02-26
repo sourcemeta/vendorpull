@@ -1,4 +1,4 @@
 .PHONY: lint
 
 lint:
-	shellcheck *.sh
+	shellcheck *.sh update
