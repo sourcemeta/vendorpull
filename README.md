@@ -61,7 +61,8 @@ Updating
 --------
 
 `vendorpull` is managed using `vendorpull` itself. Therefore you can update
-`vendorpull` by running the following command:
+`vendorpull` by updating the `vendorpull` revision from the `DEPENDENCIES` file
+and running the following command:
 
 ```sh
 ./vendor/vendorpull/vendorpull.sh vendorpull
