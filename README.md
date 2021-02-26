@@ -1,13 +1,47 @@
 vendorpull
 ==========
 
-Platform Support
+`vendorpull` is a simple vendoring package manager that takes care of managing
+a `vendor` directory in your project.
+
+Why would I want to vendor my dependencies?
+-------------------------------------------
+
+Many high-profile projects, such as Node.js and
+[Golang](https://blog.filippo.io/most-go-tools-now-work-with-go15vendorexperiment/)
+vendor their dependencies for some of the following reasons:
+
+- Including dependencies as part of your `git` repository ensures that your
+  project continues to work even if the dependencies cannot be resolved
+  anymore, This happens in practice when repositories are moved between hosting
+  providers, their history is re-written, or they are simply taken down
+
+- In various types of software projects, making changes to a third party
+  dependency and rapidly testing the application with the corresponding
+  dependency changes requires significant acrobatics and maneuvers involving
+  forking the dependency project, monkey-patching the build system to compile a
+  dependency from a custom location, etc
+
+- Strongly separating your application code from the third-party projects that
+  it depends on at the code level makes developers less likely to cross that
+  barrier for debugging purposes. If you depend on a third-party project, then
+  you have as much responsibility over it as over your application code and
+  vendoring encourages that behavior
+
+- Some types of projects are not well-suited to a particular package manager.
+  For example, Node.js projects are typically released on `npm` and Python
+  projects are typically released on `pip`. However, what is the best way to
+  release a software projects consisting of shell scripts or a dataset of CSV
+  files? You can abuse another package manager to release them or work with
+  them at the version control level using `git` submodules or a tool like
+  `vendorpull`
+
+Platform support
 ----------------
 
-Vendorpull runs in any POSIX system such as GNU/Linux, macOS, FreeBSD, etc. Its
-only external dependency is `git`.
-
-Vendorpull can be run in Microsoft Windows through the [Windows Subsystem for
+`vendorpull` runs in any POSIX system such as GNU/Linux, macOS, FreeBSD, etc.
+Its only external dependency is `git`. `vendorpull` can be run in Microsoft
+Windows through the [Windows Subsystem for
 Linux](https://docs.microsoft.com/en-us/windows/wsl/) or
 [MinGW](https://sourceforge.net/projects/mingw/).
 
@@ -24,7 +58,7 @@ following command:
 The bootstrap script will install `vendorpull` at `vendor/vendorpull` and set
 `vendorpull` as a dependency in a way such that `vendorpull` can manage itself.
 
-Managing Dependencies
+Managing dependencies
 ---------------------
 
 You can declare your dependencies using a simple `DEPENDENCIES` file where each
