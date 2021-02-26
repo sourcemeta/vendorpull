@@ -47,14 +47,24 @@ and the Electron project.
 
 In order to pull all dependencies, run the following command:
 
-```
+```sh
 ./vendor/vendorpull/vendorpull.sh
 ```
 
 You can also pull a single dependency by specifying its name as the first argument. For example:
 
-```
+```sh
 ./vendor/vendorpull/vendorpull.sh depot_tools
+```
+
+Updating
+--------
+
+`vendorpull` is managed using `vendorpull` itself. Therefore you can update
+`vendorpull` by running the following command:
+
+```sh
+./vendor/vendorpull/vendorpull.sh vendorpull
 ```
 
 Masking
