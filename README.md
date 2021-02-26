@@ -124,6 +124,19 @@ contains an 8.1M `docs` directory. We can ignore this directory by creating a
 docs
 ```
 
+Future plans
+------------
+
+Here are some of the features worth exploring if you are planning to contribute
+to this project:
+
+- [ ] Native support for running on Microsoft Windows by compiling the script
+  source code to either Batch or PowerShell using something like
+  [Batsh](https://github.com/batsh-dev-team/Batsh)
+- [ ] Gracefully support version control systems other than `git` such as
+  Mercurial, SVN, and CVS
+- [ ] Provide a simple way of declaring and maintaining dependencies patches
+
 License
 -------
 
