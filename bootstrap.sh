@@ -32,7 +32,7 @@ then
   exit 1
 fi
 
-TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull)"
+TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-bootstrap-XXXXX)"
 temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
 }
