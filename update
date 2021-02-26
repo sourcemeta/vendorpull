@@ -63,7 +63,7 @@ install_dependency() {
 
   git clone "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY"
   git -C "$GIT_REPOSITORY_DIRECTORY" reset --hard "$REVISION"
-  rm -rf "$GIT_REPOSITORY_DIRECTORY/.git"
+  rm -rf "$GIT_REPOSITORY_DIRECTORY/.git*"
 
   MASK_FILE="$VENDOR_DIRECTORY/$NAME.mask"
   if [ -f "$MASK_FILE" ]
