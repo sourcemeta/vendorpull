@@ -124,6 +124,20 @@ contains an 8.1M `docs` directory. We can ignore this directory by creating a
 docs
 ```
 
+GNU Make integration
+--------------------
+
+Add the following directive to your `Makefile`:
+
+```make
+include vendor/vendorpull/targets.mk
+```
+
+This will add two targets:
+
+- `vendor`: Pull all dependencies
+- `vendor-<dependency>`: Pull a particular dependency
+
 Future plans
 ------------
 
