@@ -63,7 +63,7 @@ install_dependency() {
   OUTPUT_DIRECTORY="$VENDOR_DIRECTORY/$NAME"
   GIT_REPOSITORY_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
 
-  git clone "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY"
+  git clone --recurse-submodules --jobs 8 "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY"
   git -C "$GIT_REPOSITORY_DIRECTORY" reset --hard "$REVISION"
 
   # Un-git the repository
