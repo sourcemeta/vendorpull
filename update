@@ -8,7 +8,7 @@ DEPENDENCIES_FILE="$PWD/DEPENDENCIES"
 VENDOR_DIRECTORY="$PWD/vendor"
 mkdir -p "$VENDOR_DIRECTORY"
 
-GIT_FILES=".git .gitignore .github"
+GIT_FILES=".git .gitignore .github .gitmodules"
 
 if ! command -v git > /dev/null
 then
