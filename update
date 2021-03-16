@@ -43,7 +43,7 @@ mask_directory() {
   while read -r pattern
   do
     echo "Applying mask: $pattern" 1>&2
-    MATCHES="$(find "$1" -name "$pattern")"
+    MATCHES="$(find "$1" -path "$pattern")"
     for file in $MATCHES
     do
       rm -rf "$file"

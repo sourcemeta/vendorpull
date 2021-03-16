@@ -114,14 +114,14 @@ In order to mask a dependency, you can create a file called
 `vendor/<name>.mask` where `<name>` corresponds to the dependency name as
 defined in the `DEPENDENCIES` file. This file contains a set of path
 expressions compatible with the [`find(1)`](https://linux.die.net/man/1/find)
-command that will be removed when vendoring the dependency.
+command `-path` option that will be removed when vendoring the dependency.
 
 For example, at the time of this writing, the Electron project repository
 contains an 8.1M `docs` directory. We can ignore this directory by creating a
 `vendor/electron.mask` file whose contents are the following:
 
 ```
-docs
+./docs
 ```
 
 GNU Make integration
