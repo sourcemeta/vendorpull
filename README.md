@@ -124,6 +124,16 @@ contains an 8.1M `docs` directory. We can ignore this directory by creating a
 ./docs
 ```
 
+Patches
+-------
+
+Sometimes its necessary to apply a set of patches to a vendored dependency
+right after pulling it into the project. You can do this automatically by
+placing a set of `*.patch` files produced with
+[`git-format-patch(1)`](http://schacon.github.io/git/git-format-patch.html)
+into a `patches/<name>` directory where `<name>` corresponds to a dependency
+name as defined in the `DEPENDENCIES` file.
+
 GNU Make integration
 --------------------
 
@@ -149,7 +159,6 @@ to this project:
   [Batsh](https://github.com/batsh-dev-team/Batsh)
 - [ ] Gracefully support version control systems other than `git` such as
   Mercurial, SVN, and CVS
-- [ ] Provide a simple way of declaring and maintaining dependencies patches
 
 License
 -------

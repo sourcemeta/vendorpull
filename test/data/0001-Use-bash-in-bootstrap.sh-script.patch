@@ -1,0 +1,25 @@
+From 9d5014af97d5005cd8764bf0fe92bf073c4c2167 Mon Sep 17 00:00:00 2001
+From: Juan Cruz Viotti <jv@jviotti.com>
+Date: Wed, 17 Mar 2021 10:55:07 -0400
+Subject: [PATCH] Use bash in bootstrap.sh script
+
+For testing purposes.
+
+Signed-off-by: Juan Cruz Viotti <jv@jviotti.com>
+---
+ bootstrap.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bootstrap.sh b/bootstrap.sh
+index 9fac40e..5902240 100755
+--- a/bootstrap.sh
++++ b/bootstrap.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ set -o errexit
+ set -o nounset
+-- 
+2.24.3 (Apple Git-128)
+
