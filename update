@@ -6,6 +6,7 @@ set -o nounset
 
 DEPENDENCIES_FILE="$PWD/DEPENDENCIES"
 VENDOR_DIRECTORY="$PWD/vendor"
+PATCHES_DIRECTORY="$PWD/patches"
 mkdir -p "$VENDOR_DIRECTORY"
 
 GIT_FILES=".git .gitignore .github .gitmodules"
@@ -67,6 +68,16 @@ install_dependency() {
 
   git clone --recurse-submodules --jobs 8 "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY"
   git -C "$GIT_REPOSITORY_DIRECTORY" reset --hard "$REVISION"
+
+  DEPENDENCY_PATCHES="$PATCHES_DIRECTORY/$NAME"
+  if [ -d "$DEPENDENCY_PATCHES" ]
+  then
+    for patch in "$DEPENDENCY_PATCHES"/*.patch
+    do
+      echo "Applying patch $patch..."
+      git -C "$GIT_REPOSITORY_DIRECTORY" apply --3way "$patch"
+    done
+  fi
 
   # Un-git the repository and its dependencies (if any)
   git -C "$GIT_REPOSITORY_DIRECTORY" submodule foreach \
