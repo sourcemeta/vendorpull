@@ -6,3 +6,4 @@ lint:
 test:
 	./test/bootstrap-pristine.sh
 	./test/patch.sh
+	./test/mask.sh
