@@ -43,12 +43,8 @@ assert_defined() {
 mask_directory() {
   while read -r pattern
   do
-    echo "Applying mask: $pattern" 1>&2
-    MATCHES="$(find "$1" -path "$pattern")"
-    for file in $MATCHES
-    do
-      rm -rf "$file"
-    done
+    echo "Applying mask on $1: $pattern" 1>&2
+    rm -vrf "${1:?}/${pattern:?}"
   done < "$2"
 }
 
