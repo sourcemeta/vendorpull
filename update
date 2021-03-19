@@ -4,10 +4,10 @@ set -o errexit
 DEPENDENCY="$1"
 set -o nounset
 
-DEPENDENCIES_FILE="$PWD/DEPENDENCIES"
-VENDOR_DIRECTORY="$PWD/vendor"
-PATCHES_DIRECTORY="$PWD/patches"
-mkdir -p "$VENDOR_DIRECTORY"
+BASE_DIRECTORY="$PWD"
+DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
+VENDOR_DIRECTORY="$BASE_DIRECTORY/vendor"
+PATCHES_DIRECTORY="$BASE_DIRECTORY/patches"
 
 GIT_FILES=".git .gitignore .github .gitmodules"
 
@@ -59,7 +59,15 @@ install_dependency() {
   assert_defined "$REPOSITORY" "$NAME: ERROR: Missing repository URL"
   assert_defined "$REVISION" "$NAME: ERROR: Missing git revision"
 
-  OUTPUT_DIRECTORY="$VENDOR_DIRECTORY/$NAME"
+  if echo "$NAME" | grep -q '/'
+  then
+    OUTPUT_DIRECTORY="$BASE_DIRECTORY/$NAME"
+  else
+    OUTPUT_DIRECTORY="$VENDOR_DIRECTORY/$NAME"
+  fi
+
+  mkdir -p "$(dirname "$OUTPUT_DIRECTORY")"
+
   GIT_REPOSITORY_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
 
   git clone --recurse-submodules --jobs 8 "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY"
