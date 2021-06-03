@@ -135,6 +135,17 @@ placing a set of `*.patch` files produced with
 into a `patches/<name>` directory where `<name>` corresponds to a dependency
 name as defined in the `DEPENDENCIES` file.
 
+GitHub integration
+------------------
+
+We recommend adding the following line to `.gitattributes` to [prevent
+GitHub](https://docs.github.com/en/github/administering-a-repository/managing-repository-settings/customizing-how-changed-files-appear-on-github)
+from automatically rendering files in `vendor` during upgrade pull requests:
+
+```
+/vendor/** linguist-generated=true
+```
+
 GNU Make integration
 --------------------
 
