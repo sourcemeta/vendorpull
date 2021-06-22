@@ -51,7 +51,7 @@ then
   # We use this for testing purposes, as otherwise we cannot
   # send a pull-request and have the changes to the program
   # be taken into account by the bootstrap script.
-  echo "Using input revision..."
+  echo "Using input revision $REVISION"
   HASH="$REVISION"
 else
   HASH="$(git -C "$TEMPORARY_DIRECTORY" rev-parse HEAD)"
