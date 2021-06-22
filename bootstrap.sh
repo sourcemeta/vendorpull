@@ -69,6 +69,6 @@ echo "vendorpull $VENDORPULL_REPOSITORY $HASH" > "$DEPENDENCIES_FILE"
 # After vendorpull has been declared in the repo, run a full update
 echo "Running vendorpull..."
 cd "$INSTALLATION_DIRECTORY"
-"$TEMPORARY_DIRECTORY/update" pull
+"$TEMPORARY_DIRECTORY/vendorpull" pull
 
 echo "Done!"

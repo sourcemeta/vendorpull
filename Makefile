@@ -4,7 +4,7 @@
 GIT_REVISION = $(shell git rev-parse HEAD)
 
 lint:
-	shellcheck *.sh update test/*.sh
+	shellcheck *.sh vendorpull test/*.sh
 
 test:
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-pristine.sh

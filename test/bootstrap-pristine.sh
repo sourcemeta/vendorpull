@@ -38,9 +38,9 @@ then
   exit 1
 fi
 
-if [ ! -x "$TEMPORARY_DIRECTORY/vendor/vendorpull/update" ]
+if [ ! -x "$TEMPORARY_DIRECTORY/vendor/vendorpull/vendorpull" ]
 then
-  echo "There should be an update executable file at vendor/vendorpull" 1>&2
+  echo "There should be an vendorpull executable file at vendor/vendorpull" 1>&2
   exit 1
 fi
 
