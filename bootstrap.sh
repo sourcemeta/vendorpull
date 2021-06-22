@@ -22,10 +22,6 @@ DEPENDENCIES_FILE="$INSTALLATION_DIRECTORY/DEPENDENCIES"
 # TODO: We should find a way to make this resistant to repository renames, etc.
 VENDORPULL_REPOSITORY="https://github.com/jviotti/vendorpull"
 
-# Make sure that we have a vendor/ directory in the installation directory
-VENDOR_DIRECTORY="$INSTALLATION_DIRECTORY/vendor"
-mkdir -p "$VENDOR_DIRECTORY"
-
 # TODO: If this is the case, then we should do an upgrade instead, once
 # we support an "upgrade" command on the main vendorpull script
 if [ -f "$DEPENDENCIES_FILE" ]
