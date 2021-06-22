@@ -1,7 +1,8 @@
 #!/bin/sh
 
 set -o errexit
-DEPENDENCY="$1"
+COMMAND="$1"
+ARGUMENT="$2"
 set -o nounset
 
 BASE_DIRECTORY="$PWD"
@@ -101,21 +102,27 @@ install_dependency() {
   mv "$TEMPORARY_DIRECTORY/$NAME" "$OUTPUT_DIRECTORY"
 }
 
-if [ -n "$DEPENDENCY" ]
+if [ "$COMMAND" = "pull" ]
 then
-  DEFINITION="$(grep "^$DEPENDENCY" < "$DEPENDENCIES_FILE" | head -n 1)"
-  if [ -z "$DEFINITION" ]
+  if [ -n "$ARGUMENT" ]
   then
-    echo "Could not find a dependency named: $DEPENDENCY" 1>&2
-    exit 1
-  fi
+    DEFINITION="$(grep "^$ARGUMENT" < "$DEPENDENCIES_FILE" | head -n 1)"
+    if [ -z "$DEFINITION" ]
+    then
+      echo "Could not find a dependency named: $ARGUMENT" 1>&2
+      exit 1
+    fi
 
-  install_dependency "$DEFINITION"
+    install_dependency "$DEFINITION"
+  else
+    echo "Reading DEPENDENCIES files..."
+    while read -r dependency
+    do
+      install_dependency "$dependency"
+    done < "$DEPENDENCIES_FILE"
+    temporary_directory_clean
+  fi
 else
-  echo "Reading DEPENDENCIES files..."
-  while read -r dependency
-  do
-    install_dependency "$dependency"
-  done < "$DEPENDENCIES_FILE"
-  temporary_directory_clean
+  echo "Unknown command: $COMMAND" 1>&2
+  exit 1
 fi

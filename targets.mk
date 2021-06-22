@@ -1,7 +1,7 @@
 .PHONY: vendor
 
-vendor:
-	./vendor/vendorpull/update
+vendor-pull:
+	./vendor/vendorpull/update pull
 
-vendor-%:
-	./vendor/vendorpull/update $(subst vendor-,,$@)
+vendor-pull-%:
+	./vendor/vendorpull/update pull $(subst vendor-,,$@)
