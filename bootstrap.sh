@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -o errexit
+REVISION="$VENDORPULL_REVISION"
 set -o nounset
 
 # We cannot proceed at all if certain dependencies are not satisfied.
@@ -45,13 +46,13 @@ trap temporary_directory_clean EXIT
 echo "Cloning vendorpull..."
 git clone "$VENDORPULL_REPOSITORY" "$TEMPORARY_DIRECTORY"
 
-if [ -n "$VENDORPULL_REVISION" ]
+if [ -n "$REVISION" ]
 then
   # We use this for testing purposes, as otherwise we cannot
   # send a pull-request and have the changes to the program
   # be taken into account by the bootstrap script.
   echo "Using input revision..."
-  HASH="$VENDORPULL_REVISION"
+  HASH="$REVISION"
 else
   HASH="$(git -C "$TEMPORARY_DIRECTORY" rev-parse HEAD)"
 fi
