@@ -84,13 +84,13 @@ and the Electron project.
 In order to pull all dependencies, run the following command:
 
 ```sh
-./vendor/vendorpull/update
+./vendor/vendorpull/update pull
 ```
 
 You can also pull a single dependency by specifying its name as the first argument. For example:
 
 ```sh
-./vendor/vendorpull/update depot_tools
+./vendor/vendorpull/update pull depot_tools
 ```
 
 Updating
@@ -101,7 +101,7 @@ Updating
 and running the following command:
 
 ```sh
-./vendor/vendorpull/update vendorpull
+./vendor/vendorpull/update pull vendorpull
 ```
 
 Masking
@@ -157,8 +157,8 @@ include vendor/vendorpull/targets.mk
 
 This will add two targets:
 
-- `vendor`: Pull all dependencies
-- `vendor-<dependency>`: Pull a particular dependency
+- `vendor-pull`: Pull all dependencies
+- `vendor-pull-<dependency>`: Pull a particular dependency
 
 Future plans
 ------------
