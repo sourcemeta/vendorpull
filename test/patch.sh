@@ -39,7 +39,7 @@ echo "Creating DEPENDENCIES files..."
 echo "vendorpull $VENDORPULL_REPOSITORY $HASH" > "$TEMPORARY_DIRECTORY/DEPENDENCIES"
 
 echo "Re-running vendorpull..."
-./vendor/vendorpull/update pull
+./vendor/vendorpull/vendorpull pull
 
 if [ "$(head -n 1 "$TEMPORARY_DIRECTORY/vendor/vendorpull/bootstrap.sh")" != "#!/bin/bash" ]
 then
