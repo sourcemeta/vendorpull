@@ -5,49 +5,110 @@ COMMAND="$1"
 ARGUMENT="$2"
 set -o nounset
 
-BASE_DIRECTORY="$PWD"
-DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
-VENDOR_DIRECTORY="$BASE_DIRECTORY/vendor"
-PATCHES_DIRECTORY="$BASE_DIRECTORY/patches"
+#################################################
+# Utility functions
+#################################################
 
-GIT_FILES=".git .gitignore .github .gitmodules"
-
-if ! command -v git > /dev/null
-then
-  echo "You must install git in order to use this tool" 1>&2
+# @params [string] Error message
+vendorpull_fail() {
+  echo "ERROR: $1" 1>&2
   exit 1
-fi
+}
+
+# @params [string] File path
+# @params [string] Error message
+vendorpull_assert_defined() {
+  if [ -z "$1" ]
+  then
+    vendorpull_fail "$2"
+  fi
+}
+
+# @params [string] Command
+vendorpull_assert_command() {
+  if ! command -v "$1" > /dev/null
+  then
+    vendorpull_fail "You must install $1 in order to use this tool"
+  fi
+}
+
+# @params [string] File path
+vendorpull_assert_file() {
+  if [ ! -f "$1" ]
+  then
+    vendorpull_fail "No such file: $1"
+  fi
+}
+
+#################################################
+# VCS: Git support
+#################################################
+
+# Clone a git repository
+# @params [string] Git URL
+# @params [string] Clone location
+# @params [string] Revision
+vendorpull_clone_git() {
+  git clone --recurse-submodules --jobs 8 "$1" "$2"
+  git -C "$2" reset --hard "$3"
+}
+
+# Un-git the repository and its dependencies (if any)
+# @params [string] Repository directory
+vendorpull_clean_git() {
+  GIT_FILES=".git .gitignore .github .gitmodules"
+  git -C "$1" submodule foreach "rm -rf $GIT_FILES"
+  for file in $GIT_FILES
+  do
+    rm -rf "$1/${file:?}"
+  done
+}
+
+#################################################
+# General functions
+#################################################
+
+# Mask a directory with a set of patterns
+# @params [string] Input directory
+# @params [string] Mask file
+vendorpull_mask_directory() {
+  if [ -f "$2" ]
+  then
+    while read -r pattern
+    do
+      echo "Applying mask on $1: $pattern" 1>&2
+      rm -vrf "${1:?}/${pattern:?}"
+    done < "$2"
+  fi
+}
+
+# Apply a set of patches to a base directory
+# @params [string] Base directory
+# @params [string] Patches directory
+vendorpull_patch() {
+  if [ -d "$2" ]
+  then
+    for patch in "$2"/*.patch
+    do
+      echo "Applying patch $patch..."
+      git -C "$1" apply --3way "$patch"
+    done
+  fi
+}
+
+#################################################
+# Commands
+#################################################
 
 TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
 echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
 temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
 }
-
 trap temporary_directory_clean EXIT
 
-if [ ! -f "$DEPENDENCIES_FILE" ]
-then
-  echo "Could not find a dependencies manifest at:" 1>&2
-  echo "  $DEPENDENCIES_FILE" 1>&2
-  exit 1
-fi
-
-assert_defined() {
-  if [ -z "$1" ]
-  then
-    echo "$2" 1>&2
-    exit 1
-  fi
-}
-
-mask_directory() {
-  while read -r pattern
-  do
-    echo "Applying mask on $1: $pattern" 1>&2
-    rm -vrf "${1:?}/${pattern:?}"
-  done < "$2"
-}
+BASE_DIRECTORY="$PWD"
+VENDOR_DIRECTORY="$BASE_DIRECTORY/vendor"
 
 install_dependency() {
   NAME="$(echo "$1" | cut -d ' ' -f 1)"
@@ -56,9 +117,9 @@ install_dependency() {
 
   echo "Updating $NAME..."
 
-  assert_defined "$NAME" "ERROR: Missing dependency name"
-  assert_defined "$REPOSITORY" "$NAME: ERROR: Missing repository URL"
-  assert_defined "$REVISION" "$NAME: ERROR: Missing git revision"
+  vendorpull_assert_defined "$NAME" "Missing dependency name"
+  vendorpull_assert_defined "$REPOSITORY" "($NAME) Missing repository URL"
+  vendorpull_assert_defined "$REVISION" "($NAME) Missing git revision"
 
   if echo "$NAME" | grep -q '/'
   then
@@ -71,48 +132,26 @@ install_dependency() {
 
   GIT_REPOSITORY_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
 
-  git clone --recurse-submodules --jobs 8 "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY"
-  git -C "$GIT_REPOSITORY_DIRECTORY" reset --hard "$REVISION"
-
-  DEPENDENCY_PATCHES="$PATCHES_DIRECTORY/$NAME"
-  if [ -d "$DEPENDENCY_PATCHES" ]
-  then
-    for patch in "$DEPENDENCY_PATCHES"/*.patch
-    do
-      echo "Applying patch $patch..."
-      git -C "$GIT_REPOSITORY_DIRECTORY" apply --3way "$patch"
-    done
-  fi
-
-  # Un-git the repository and its dependencies (if any)
-  git -C "$GIT_REPOSITORY_DIRECTORY" submodule foreach \
-    "rm -rf $GIT_FILES"
-  for file in $GIT_FILES
-  do
-    rm -rf "$GIT_REPOSITORY_DIRECTORY/${file:?}"
-  done
-
-  MASK_FILE="$VENDOR_DIRECTORY/$NAME.mask"
-  if [ -f "$MASK_FILE" ]
-  then
-    mask_directory "$GIT_REPOSITORY_DIRECTORY" "$MASK_FILE"
-  fi
+  vendorpull_clone_git "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY" "$REVISION"
+  vendorpull_patch "$GIT_REPOSITORY_DIRECTORY" "$BASE_DIRECTORY/patches/$NAME"
+  vendorpull_clean_git "$GIT_REPOSITORY_DIRECTORY"
+  vendorpull_mask_directory "$GIT_REPOSITORY_DIRECTORY" "$VENDOR_DIRECTORY/$NAME.mask"
 
   rm -rf "$OUTPUT_DIRECTORY"
   mv "$TEMPORARY_DIRECTORY/$NAME" "$OUTPUT_DIRECTORY"
 }
+
+vendorpull_assert_command 'git'
+
+DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
+vendorpull_assert_file "$DEPENDENCIES_FILE"
 
 if [ "$COMMAND" = "pull" ]
 then
   if [ -n "$ARGUMENT" ]
   then
     DEFINITION="$(grep "^$ARGUMENT" < "$DEPENDENCIES_FILE" | head -n 1)"
-    if [ -z "$DEFINITION" ]
-    then
-      echo "Could not find a dependency named: $ARGUMENT" 1>&2
-      exit 1
-    fi
-
+    vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $ARGUMENT"
     install_dependency "$DEFINITION"
   else
     echo "Reading DEPENDENCIES files..."
@@ -123,6 +162,5 @@ then
     temporary_directory_clean
   fi
 else
-  echo "Unknown command: $COMMAND" 1>&2
-  exit 1
+  vendorpull_fail "Unknown command: $COMMAND"
 fi
