@@ -74,9 +74,7 @@ In this case, we're vendoring `vendorpull` itself, Chromium's `depot_tools`,
 and the Electron project.
 
 - The first column defines the dependency name as it will be vendored in the
-  project. If the name does not contain a slash, then the dependency is
-  vendored inside the `vendor` directory. Otherwise, the dependency name is
-  vendored relative to the root of the repository
+  project. The dependency is vendored inside the `vendor` directory.
 - The second column defines the repository `git` URL of the dependency
 - The third column defines the `git` revision of the project that you want to
   vendor. It can be any `git` revision such as a commit hash, a tag, etc
