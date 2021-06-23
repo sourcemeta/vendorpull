@@ -116,15 +116,6 @@ vendorpull_command_pull() {
   vendorpull_assert_defined "$REPOSITORY" "($NAME) Missing repository URL"
   vendorpull_assert_defined "$REVISION" "($NAME) Missing git revision"
 
-  # If the dependency name contains slashes, then we take it to be
-  # a full relative path from the base directory
-  if echo "$NAME" | grep -q '/'
-  then
-    OUTPUT_DIRECTORY="$1/$NAME"
-  else
-    OUTPUT_DIRECTORY="$1/vendor/$NAME"
-  fi
-
   GIT_REPOSITORY_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
   vendorpull_clone_git "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY" "$REVISION"
   vendorpull_patch "$GIT_REPOSITORY_DIRECTORY" "$1/patches/$NAME"
@@ -132,6 +123,7 @@ vendorpull_command_pull() {
   vendorpull_mask_directory "$GIT_REPOSITORY_DIRECTORY" "$1/vendor/$NAME.mask"
 
   # Atomically move the new dependency into the vendor directory
+  OUTPUT_DIRECTORY="$1/vendor/$NAME"
   rm -rf "$OUTPUT_DIRECTORY"
   mkdir -p "$(dirname "$OUTPUT_DIRECTORY")"
   mv "$TEMPORARY_DIRECTORY/$NAME" "$OUTPUT_DIRECTORY"
