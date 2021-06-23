@@ -64,6 +64,12 @@ vendorpull_clean_git() {
     rm -rf "$1/${file:?}"
   done
 }
+
+# @params [string] Repository directory
+# @params [string] Patch file
+vendorpull_patch_git() {
+  git -C "$1" apply --3way "$2"
+}
 # Mask a directory with a set of patterns
 # @params [string] Input directory
 # @params [string] Mask file
@@ -86,7 +92,7 @@ vendorpull_patch() {
     for patch in "$2"/*.patch
     do
       echo "Applying patch $patch..."
-      git -C "$1" apply --3way "$patch"
+      vendorpull_patch_git "$1" "$patch"
     done
   fi
 }
@@ -136,8 +142,6 @@ vendorpull_assert_command 'git'
 BASE_DIRECTORY="$PWD"
 DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
 vendorpull_assert_file "$DEPENDENCIES_FILE"
-
-# TODO: Add a help command
 
 if [ "$COMMAND" = "pull" ]
 then
