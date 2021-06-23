@@ -6,73 +6,10 @@ ARGUMENT="$2"
 set -o nounset
 
 %include "assert.sh"
-
-#################################################
-# VCS: Git support
-#################################################
-
-# Clone a git repository
-# @params [string] Git URL
-# @params [string] Clone location
-# @params [string] Revision
-vendorpull_clone_git() {
-  git clone --recurse-submodules --jobs 8 "$1" "$2"
-  git -C "$2" reset --hard "$3"
-}
-
-# Un-git the repository and its dependencies (if any)
-# @params [string] Repository directory
-vendorpull_clean_git() {
-  GIT_FILES=".git .gitignore .github .gitmodules"
-  git -C "$1" submodule foreach "rm -rf $GIT_FILES"
-  for file in $GIT_FILES
-  do
-    rm -rf "$1/${file:?}"
-  done
-}
-
-#################################################
-# General functions
-#################################################
-
-# Mask a directory with a set of patterns
-# @params [string] Input directory
-# @params [string] Mask file
-vendorpull_mask_directory() {
-  if [ -f "$2" ]
-  then
-    while read -r pattern
-    do
-      echo "Applying mask on $1: $pattern" 1>&2
-      rm -vrf "${1:?}/${pattern:?}"
-    done < "$2"
-  fi
-}
-
-# Apply a set of patches to a base directory
-# @params [string] Base directory
-# @params [string] Patches directory
-vendorpull_patch() {
-  if [ -d "$2" ]
-  then
-    for patch in "$2"/*.patch
-    do
-      echo "Applying patch $patch..."
-      git -C "$1" apply --3way "$patch"
-    done
-  fi
-}
-
-#################################################
-# Commands
-#################################################
-
-TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
-echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
-temporary_directory_clean() {
-  rm -rf "$TEMPORARY_DIRECTORY"
-}
-trap temporary_directory_clean EXIT
+%include "vcs/git.sh"
+%include "masker.sh"
+%include "patcher.sh"
+%include "tmpdir.sh"
 
 # @params [string] Base directory
 # @params [string] Dependency definition
