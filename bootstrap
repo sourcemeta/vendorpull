@@ -4,13 +4,38 @@ set -o errexit
 REVISION="$VENDORPULL_REVISION"
 set -o nounset
 
-# We cannot proceed at all if certain dependencies are not satisfied.
-echo "Ensuring system dependencies are satisfied..."
-if ! command -v git > /dev/null
-then
-  echo "You must install git in order to install this tool" 1>&2
+# @params [string] Error message
+vendorpull_fail() {
+  echo "ERROR: $1" 1>&2
   exit 1
-fi
+}
+
+# @params [string] File path
+# @params [string] Error message
+vendorpull_assert_defined() {
+  if [ -z "$1" ]
+  then
+    vendorpull_fail "$2"
+  fi
+}
+
+# @params [string] Command
+vendorpull_assert_command() {
+  if ! command -v "$1" > /dev/null
+  then
+    vendorpull_fail "You must install $1 in order to use this tool"
+  fi
+}
+
+# @params [string] File path
+vendorpull_assert_file() {
+  if [ ! -f "$1" ]
+  then
+    vendorpull_fail "No such file: $1"
+  fi
+}
+
+vendorpull_assert_command 'git'
 
 # By default, we install vendorpull into the directory it was called from.
 # TODO: A slightly better approach is to find the root of the git repo
@@ -33,8 +58,7 @@ then
   exit 1
 fi
 
-# Setup a temporary directory
-TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-bootstrap-XXXXX)"
+TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
 echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
 temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
