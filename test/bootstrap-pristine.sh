@@ -16,7 +16,7 @@ VENDORPULL_SOURCE="$PWD"
 cd "$TEMPORARY_DIRECTORY"
 
 echo "Running bootstrap script..."
-"$VENDORPULL_SOURCE/bootstrap.sh"
+"$VENDORPULL_SOURCE/bootstrap"
 
 echo "Running assertions..."
 

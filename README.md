@@ -52,7 +52,7 @@ Go to the root of the repository you want to setup `vendorpull` in and run the
 following command:
 
 ```sh
-/bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/jviotti/vendorpull/master/bootstrap.sh -H "Cache-Control: no-cache, no-store, must-revalidate")"
+/bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/jviotti/vendorpull/master/bootstrap -H "Cache-Control: no-cache, no-store, must-revalidate")"
 ```
 
 The bootstrap script will install `vendorpull` at `vendor/vendorpull` and set
