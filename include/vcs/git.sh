@@ -17,3 +17,9 @@ vendorpull_clean_git() {
     rm -rf "$1/${file:?}"
   done
 }
+
+# @params [string] Repository directory
+# @params [string] Patch file
+vendorpull_patch_git() {
+  git -C "$1" apply --3way "$2"
+}

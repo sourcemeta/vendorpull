@@ -7,7 +7,7 @@ vendorpull_patch() {
     for patch in "$2"/*.patch
     do
       echo "Applying patch $patch..."
-      git -C "$1" apply --3way "$patch"
+      vendorpull_patch_git "$1" "$patch"
     done
   fi
 }

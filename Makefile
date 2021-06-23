@@ -4,7 +4,11 @@
 # The current git commit hash
 GIT_REVISION = $(shell git rev-parse HEAD)
 
-HEADERS = include/assert.sh
+HEADERS = include/assert.sh \
+					include/masker.sh \
+					include/patcher.sh \
+					include/tmpdir.sh \
+					include/vcs/git.sh
 
 vendorpull: src/vendorpull.sh $(HEADERS)
 	gpp -o $@ -I include \
