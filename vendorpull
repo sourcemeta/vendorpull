@@ -35,11 +35,6 @@ vendorpull_assert_file() {
     vendorpull_fail "No such file: $1"
   fi
 }
-
-#################################################
-# VCS: Git support
-#################################################
-
 # Clone a git repository
 # @params [string] Git URL
 # @params [string] Clone location
@@ -59,11 +54,6 @@ vendorpull_clean_git() {
     rm -rf "$1/${file:?}"
   done
 }
-
-#################################################
-# General functions
-#################################################
-
 # Mask a directory with a set of patterns
 # @params [string] Input directory
 # @params [string] Mask file
@@ -77,7 +67,6 @@ vendorpull_mask_directory() {
     done < "$2"
   fi
 }
-
 # Apply a set of patches to a base directory
 # @params [string] Base directory
 # @params [string] Patches directory
@@ -91,11 +80,6 @@ vendorpull_patch() {
     done
   fi
 }
-
-#################################################
-# Commands
-#################################################
-
 TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
 echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
 temporary_directory_clean() {
