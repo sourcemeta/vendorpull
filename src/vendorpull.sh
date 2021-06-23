@@ -67,7 +67,6 @@ then
     do
       vendorpull_command_pull "$BASE_DIRECTORY" "$dependency"
     done < "$DEPENDENCIES_FILE"
-    temporary_directory_clean
   fi
 else
   vendorpull_fail "Unknown command: $COMMAND"
