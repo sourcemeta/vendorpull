@@ -5,6 +5,16 @@ COMMAND="$1"
 ARGUMENT="$2"
 set -o nounset
 
+if [ "$COMMAND" = "help" ] || [ "$COMMAND" = "" ]
+then
+  echo "Usage: $0 <command> [args...]" 1>&2
+  echo "" 1>&2
+  echo "Commands:" 1>&2
+  echo "    pull            Fetch all dependencies defined in DEPENDENCIES" 1>&2
+  echo "    pull <pattern>  Fetch the first dependency that matches <pattern>" 1>&2
+  exit 1
+fi
+
 # @params [string] Error message
 vendorpull_fail() {
   echo "ERROR: $1" 1>&2

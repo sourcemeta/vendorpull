@@ -20,3 +20,4 @@ test:
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-pristine.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/patch.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/mask.sh
+	VENDORPULL_REVISION=$(GIT_REVISION) ./test/help.sh

@@ -5,6 +5,16 @@ COMMAND="$1"
 ARGUMENT="$2"
 set -o nounset
 
+if [ "$COMMAND" = "help" ] || [ "$COMMAND" = "" ]
+then
+  echo "Usage: $0 <command> [args...]" 1>&2
+  echo "" 1>&2
+  echo "Commands:" 1>&2
+  echo "    pull            Fetch all dependencies defined in DEPENDENCIES" 1>&2
+  echo "    pull <pattern>  Fetch the first dependency that matches <pattern>" 1>&2
+  exit 1
+fi
+
 %include "assert.sh"
 %include "vcs/git.sh"
 %include "masker.sh"
@@ -50,8 +60,6 @@ vendorpull_assert_command 'git'
 BASE_DIRECTORY="$PWD"
 DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
 vendorpull_assert_file "$DEPENDENCIES_FILE"
-
-# TODO: Add a help command
 
 if [ "$COMMAND" = "pull" ]
 then
