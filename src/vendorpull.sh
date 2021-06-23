@@ -2,7 +2,6 @@
 
 set -o errexit
 COMMAND="$1"
-ARGUMENT="$2"
 set -o nounset
 
 if [ "$COMMAND" = "help" ] || [ "$COMMAND" = "" ]
@@ -50,15 +49,17 @@ vendorpull_command_pull() {
 vendorpull_assert_command 'git'
 
 BASE_DIRECTORY="$PWD"
-DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
-vendorpull_assert_file "$DEPENDENCIES_FILE"
 
 if [ "$COMMAND" = "pull" ]
 then
-  if [ -n "$ARGUMENT" ]
+  DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
+  vendorpull_assert_file "$DEPENDENCIES_FILE"
+
+  shift
+  if [ $# -gt 0 ]
   then
-    DEFINITION="$(grep "^$ARGUMENT" < "$DEPENDENCIES_FILE" | head -n 1)"
-    vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $ARGUMENT"
+    DEFINITION="$(grep "^$1" < "$DEPENDENCIES_FILE" | head -n 1)"
+    vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $1"
     vendorpull_command_pull "$BASE_DIRECTORY" "$DEFINITION"
   else
     echo "Reading DEPENDENCIES files..."
