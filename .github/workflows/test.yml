@@ -12,12 +12,24 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Dependencies
+    - name: Dependencies (macOS)
       if: runner.os == 'macos'
-      run: brew install shellcheck
+      run: brew install shellcheck gpp
+    - name: Dependencies (GNU/Linux)
+      if: runner.os == 'linux'
+      run: sudo apt install -y gpp
+
+    - name: Clean
+      run: make clean
+
+    - name: Build
+      run: make
 
     - name: Lint
       run: make lint
 
     - name: Test
       run: make test
+
+    - name: Check that there are no uncommitted changes
+      run: ./.github/no-staged-uncommitted-files.sh
