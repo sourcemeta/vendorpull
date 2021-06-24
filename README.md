@@ -82,13 +82,13 @@ and the Electron project.
 In order to pull all dependencies, run the following command:
 
 ```sh
-./vendor/vendorpull/vendorpull pull
+./vendor/vendorpull/pull
 ```
 
 You can also pull a single dependency by specifying its name as the first argument. For example:
 
 ```sh
-./vendor/vendorpull/vendorpull pull depot_tools
+./vendor/vendorpull/pull depot_tools
 ```
 
 Updating
@@ -99,7 +99,7 @@ Updating
 and running the following command:
 
 ```sh
-./vendor/vendorpull/vendorpull pull vendorpull
+./vendor/vendorpull/pull vendorpull
 ```
 
 Masking

@@ -35,7 +35,7 @@ fi
 
 echo "test" > "$TEMPORARY_DIRECTORY/vendor/vendorpull.mask"
 
-./vendor/vendorpull/vendorpull pull
+./vendor/vendorpull/pull
 
 if [ -d "$TEMPORARY_DIRECTORY/vendor/vendorpull/test" ]
 then

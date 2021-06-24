@@ -119,8 +119,8 @@ echo "Creating DEPENDENCIES files..."
 echo "vendorpull $VENDORPULL_REPOSITORY $HASH" > "$DEPENDENCIES_FILE"
 
 # After vendorpull has been declared in the repo, run a full update
-echo "Running vendorpull..."
+echo "Pulling dependencies ..."
 cd "$INSTALLATION_DIRECTORY"
-"$TEMPORARY_DIRECTORY/vendorpull" pull
+"$TEMPORARY_DIRECTORY/pull"
 
 echo "Done!"
