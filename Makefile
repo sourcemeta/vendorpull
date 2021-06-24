@@ -12,7 +12,8 @@ HEADERS = include/assert.sh \
 					include/vcs/git.sh
 
 COMMANDS = bootstrap \
-					 pull
+					 pull \
+					 upgrade
 
 %: src/%.sh $(HEADERS)
 	gpp -o $@ -I include \

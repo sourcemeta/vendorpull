@@ -1,0 +1,178 @@
+#!/bin/sh
+
+set -o errexit
+PATTERN="$1"
+REVISION="$2"
+set -o nounset
+
+if [ -z "$PATTERN" ]
+then
+  echo "Usage: $0 <pattern> [revision]" 1>&2
+  exit 1
+fi
+
+# @params [string] Error message
+vendorpull_fail() {
+  echo "ERROR: $1" 1>&2
+  exit 1
+}
+
+# @params [string] File path
+# @params [string] Error message
+vendorpull_assert_defined() {
+  if [ -z "$1" ]
+  then
+    vendorpull_fail "$2"
+  fi
+}
+
+# @params [string] Command
+vendorpull_assert_command() {
+  if ! command -v "$1" > /dev/null
+  then
+    vendorpull_fail "You must install $1 in order to use this tool"
+  fi
+}
+
+# @params [string] File path
+vendorpull_assert_file() {
+  if [ ! -f "$1" ]
+  then
+    vendorpull_fail "No such file: $1"
+  fi
+}
+# Clone a git repository
+# @params [string] Git URL
+# @params [string] Clone location
+# @params [string] Revision
+vendorpull_clone_git() {
+  git clone --recurse-submodules --jobs 8 "$1" "$2"
+  if [ "$3" != "HEAD" ]
+  then
+    git -C "$2" reset --hard "$3"
+  fi
+}
+
+# Un-git the repository and its dependencies (if any)
+# @params [string] Repository directory
+vendorpull_clean_git() {
+  GIT_FILES=".git .gitignore .github .gitmodules"
+  git -C "$1" submodule foreach "rm -rf $GIT_FILES"
+  for file in $GIT_FILES
+  do
+    rm -rf "$1/${file:?}"
+  done
+}
+
+# @params [string] Repository directory
+# @params [string] Patch file
+vendorpull_patch_git() {
+  git -C "$1" apply --3way "$2"
+}
+TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
+echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
+temporary_directory_clean() {
+  rm -rf "$TEMPORARY_DIRECTORY"
+}
+trap temporary_directory_clean EXIT
+# @params [string] Dependency definition
+vendorpull_dependencies_name() {
+  RESULT="$(echo "$1" | cut -d ' ' -f 1)"
+  vendorpull_assert_defined "$RESULT" "Missing dependency name"
+  echo "$RESULT"
+}
+
+# @params [string] Dependency definition
+vendorpull_dependencies_repository() {
+  RESULT="$(echo "$1" | cut -d ' ' -f 2)"
+  vendorpull_assert_defined "$RESULT" "Missing dependency url"
+  echo "$RESULT"
+}
+
+# @params [string] Dependency definition
+vendorpull_dependencies_revision() {
+  RESULT="$(echo "$1" | cut -d ' ' -f 3)"
+  vendorpull_assert_defined "$RESULT" "Missing dependency revision"
+  echo "$RESULT"
+}
+
+# @params [string] Path to DEPENDENCIES file
+# @params [string] Pattern
+vendorpull_dependencies_find() {
+  if [ ! -f "$1" ]
+  then
+    echo ""
+  else
+    grep "^$2" < "$1" | head -n 1
+  fi
+}
+
+# @params [string] Path to DEPENDENCIES file
+# @params [string] Pattern
+vendorpull_dependencies_safe_find() {
+  DEFINITION="$(vendorpull_dependencies_find "$1" "$2")"
+  vendorpull_assert_defined "$DEFINITION" "Could not find a dependency $2 in $1"
+  echo "$DEFINITION"
+}
+
+# @params [string] Path to DEPENDENCIES file
+# @params [string] Dependency name
+vendorpull_dependencies_find_exact() {
+  if [ ! -f "$1" ]
+  then
+    echo ""
+  else
+    grep "^$2 " < "$1" | head -n 1
+  fi
+}
+
+# @params [string] Path to DEPENDENCIES file
+# @params [string] Dependency name
+# @params [string] Dependency url
+# @params [string] Dependency revision
+vendorpull_dependency_set() {
+  DEPENDENCY="$(vendorpull_dependencies_find_exact "$1" "$2")"
+  if [ -z "$DEPENDENCY" ]
+  then
+    echo "$2 $3 $4" >> "$1"
+  else
+    # Use a delimiter other than the slash
+    # in case the dependency name contains one
+    if [ "$(uname)" = "Darwin" ]
+    then
+      sed -i .bak "s|^$2 .*|$2 $3 $4|" "$1"
+      rm "$1.bak"
+    else
+      sed -i "s|^$2 .*|$2 $3 $4|" "$1"
+    fi
+  fi
+}
+
+# Get the root directory of the current git repository
+BASE_DIRECTORY="$(git rev-parse --show-toplevel)"
+DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
+vendorpull_assert_file "$DEPENDENCIES_FILE"
+
+DEFINITION="$(vendorpull_dependencies_safe_find "$DEPENDENCIES_FILE" "$PATTERN")"
+
+NAME="$(vendorpull_dependencies_name "$DEFINITION")"
+REPOSITORY="$(vendorpull_dependencies_repository "$DEFINITION")"
+CURRENT_REVISION="$(vendorpull_dependencies_revision "$DEFINITION")"
+
+if [ -n "$REVISION" ] && [ "$REVISION" != "HEAD" ]
+then
+  if [ "$CURRENT_REVISION" = "$REVISION" ]
+  then
+    echo "Dependency $NAME is up to date"
+    exit 0
+  fi
+
+  NEW_REVISION="$REVISION"
+else
+  echo "Cloning $REPOSITORY..."
+  vendorpull_clone_git "$REPOSITORY" "$TEMPORARY_DIRECTORY" HEAD
+  NEW_REVISION="$(git -C "$TEMPORARY_DIRECTORY" rev-parse HEAD)"
+fi
+
+echo "Upgrading $NAME to $NEW_REVISION"
+vendorpull_dependency_set "$DEPENDENCIES_FILE" "$NAME" "$REPOSITORY" "$NEW_REVISION"
