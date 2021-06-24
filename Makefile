@@ -10,6 +10,9 @@ HEADERS = include/assert.sh \
 					include/tmpdir.sh \
 					include/vcs/git.sh
 
+COMMANDS = bootstrap \
+					 pull
+
 %: src/%.sh $(HEADERS)
 	gpp -o $@ -I include \
 		-U "" "" "(" "," ")" "(" ")" "\#" "\\" \
@@ -17,16 +20,15 @@ HEADERS = include/assert.sh \
 		$<
 	chmod +x $@
 
-build: vendorpull bootstrap
+build: $(COMMANDS)
 
-lint:
-	shellcheck bootstrap vendorpull test/*.sh
+lint: $(COMMANDS)
+	shellcheck $(COMMANDS) test/*.sh
 
 test:
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-pristine.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/patch.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/mask.sh
-	VENDORPULL_REVISION=$(GIT_REVISION) ./test/help.sh
 
 clean:
-	rm bootstrap vendorpull
+	rm $(COMMANDS)

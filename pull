@@ -1,18 +1,8 @@
 #!/bin/sh
 
 set -o errexit
-COMMAND="$1"
+ARGUMENT="$1"
 set -o nounset
-
-if [ "$COMMAND" = "help" ] || [ "$COMMAND" = "" ]
-then
-  echo "Usage: $0 <command> [args...]" 1>&2
-  echo "" 1>&2
-  echo "Commands:" 1>&2
-  echo "    pull            Fetch all dependencies defined in DEPENDENCIES" 1>&2
-  echo "    pull <pattern>  Fetch the first dependency that matches <pattern>" 1>&2
-  exit 1
-fi
 
 # @params [string] Error message
 vendorpull_fail() {
@@ -134,25 +124,18 @@ vendorpull_command_pull() {
 vendorpull_assert_command 'git'
 
 BASE_DIRECTORY="$PWD"
+DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
+vendorpull_assert_file "$DEPENDENCIES_FILE"
 
-if [ "$COMMAND" = "pull" ]
+if [ -n "$ARGUMENT" ]
 then
-  DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
-  vendorpull_assert_file "$DEPENDENCIES_FILE"
-
-  shift
-  if [ $# -gt 0 ]
-  then
-    DEFINITION="$(grep "^$1" < "$DEPENDENCIES_FILE" | head -n 1)"
-    vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $1"
-    vendorpull_command_pull "$BASE_DIRECTORY" "$DEFINITION"
-  else
-    echo "Reading DEPENDENCIES files..."
-    while read -r dependency
-    do
-      vendorpull_command_pull "$BASE_DIRECTORY" "$dependency"
-    done < "$DEPENDENCIES_FILE"
-  fi
+  DEFINITION="$(grep "^$ARGUMENT" < "$DEPENDENCIES_FILE" | head -n 1)"
+  vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $1"
+  vendorpull_command_pull "$BASE_DIRECTORY" "$DEFINITION"
 else
-  vendorpull_fail "Unknown command: $COMMAND"
+  echo "Reading DEPENDENCIES files..."
+  while read -r dependency
+  do
+    vendorpull_command_pull "$BASE_DIRECTORY" "$dependency"
+  done < "$DEPENDENCIES_FILE"
 fi
