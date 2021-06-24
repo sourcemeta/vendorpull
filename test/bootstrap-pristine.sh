@@ -4,6 +4,7 @@ set -o errexit
 set -o nounset
 
 TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-test-XXXXX)"
+git -C "$TEMPORARY_DIRECTORY" init
 
 echo "Setting up test case at $TEMPORARY_DIRECTORY..."
 temporary_directory_clean() {
