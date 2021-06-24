@@ -191,7 +191,8 @@ vendorpull_command_pull() {
 
 vendorpull_assert_command 'git'
 
-BASE_DIRECTORY="$PWD"
+# Get the root directory of the current git repository
+BASE_DIRECTORY="$(git rev-parse --show-toplevel)"
 DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
 vendorpull_assert_file "$DEPENDENCIES_FILE"
 
