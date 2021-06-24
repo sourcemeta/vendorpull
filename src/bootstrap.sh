@@ -9,10 +9,8 @@ set -o nounset
 
 vendorpull_assert_command 'git'
 
-# By default, we install vendorpull into the directory it was called from.
-# TODO: A slightly better approach is to find the root of the git repo
-# we are executing the script on, and use that instead.
-INSTALLATION_DIRECTORY="$PWD"
+# Get the root directory of the current git repository
+INSTALLATION_DIRECTORY="$(git rev-parse --show-toplevel)"
 
 DEPENDENCIES_FILE="$INSTALLATION_DIRECTORY/DEPENDENCIES"
 
