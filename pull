@@ -130,7 +130,7 @@ vendorpull_assert_file "$DEPENDENCIES_FILE"
 if [ -n "$ARGUMENT" ]
 then
   DEFINITION="$(grep "^$ARGUMENT" < "$DEPENDENCIES_FILE" | head -n 1)"
-  vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $1"
+  vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $ARGUMENT"
   vendorpull_command_pull "$BASE_DIRECTORY" "$DEFINITION"
 else
   echo "Reading DEPENDENCIES files..."
