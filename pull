@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -o errexit
-ARGUMENT="$1"
+PATTERN="$1"
 set -o nounset
 
 # @params [string] Error message
@@ -94,19 +94,49 @@ temporary_directory_clean() {
   rm -rf "$TEMPORARY_DIRECTORY"
 }
 trap temporary_directory_clean EXIT
+# @params [string] Dependency definition
+vendorpull_dependencies_name() {
+  RESULT="$(echo "$1" | cut -d ' ' -f 1)"
+  vendorpull_assert_defined "$RESULT" "Missing dependency name"
+  echo "$RESULT"
+}
+
+# @params [string] Dependency definition
+vendorpull_dependencies_repository() {
+  RESULT="$(echo "$1" | cut -d ' ' -f 2)"
+  vendorpull_assert_defined "$RESULT" "Missing dependency url"
+  echo "$RESULT"
+}
+
+# @params [string] Dependency definition
+vendorpull_dependencies_revision() {
+  RESULT="$(echo "$1" | cut -d ' ' -f 3)"
+  vendorpull_assert_defined "$RESULT" "Missing dependency revision"
+  echo "$RESULT"
+}
+
+# @params [string] Path to DEPENDENCIES file
+# @params [string] Pattern
+vendorpull_dependencies_find() {
+  grep "^$2" < "$1" | head -n 1
+}
+
+# @params [string] Path to DEPENDENCIES file
+# @params [string] Pattern
+vendorpull_dependencies_safe_find() {
+  DEFINITION="$(vendorpull_dependencies_find "$1" "$2")"
+  vendorpull_assert_defined "$DEFINITION" "Could not find a dependency $2 in $1"
+  echo "$DEFINITION"
+}
 
 # @params [string] Base directory
 # @params [string] Dependency definition
 vendorpull_command_pull() {
-  NAME="$(echo "$2" | cut -d ' ' -f 1)"
-  REPOSITORY="$(echo "$2" | cut -d ' ' -f 2)"
-  REVISION="$(echo "$2" | cut -d ' ' -f 3)"
+  NAME="$(vendorpull_dependencies_name "$2")"
+  REPOSITORY="$(vendorpull_dependencies_repository "$2")"
+  REVISION="$(vendorpull_dependencies_revision "$2")"
 
   echo "Updating $NAME..."
-
-  vendorpull_assert_defined "$NAME" "Missing dependency name"
-  vendorpull_assert_defined "$REPOSITORY" "($NAME) Missing repository URL"
-  vendorpull_assert_defined "$REVISION" "($NAME) Missing git revision"
 
   GIT_REPOSITORY_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
   vendorpull_clone_git "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY" "$REVISION"
@@ -127,10 +157,9 @@ BASE_DIRECTORY="$PWD"
 DEPENDENCIES_FILE="$BASE_DIRECTORY/DEPENDENCIES"
 vendorpull_assert_file "$DEPENDENCIES_FILE"
 
-if [ -n "$ARGUMENT" ]
+if [ -n "$PATTERN" ]
 then
-  DEFINITION="$(grep "^$ARGUMENT" < "$DEPENDENCIES_FILE" | head -n 1)"
-  vendorpull_assert_defined "$DEFINITION" "Could not find a dependency named: $ARGUMENT"
+  DEFINITION="$(vendorpull_dependencies_safe_find "$DEPENDENCIES_FILE" "$PATTERN")"
   vendorpull_command_pull "$BASE_DIRECTORY" "$DEFINITION"
 else
   echo "Reading DEPENDENCIES files..."
