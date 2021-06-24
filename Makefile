@@ -28,6 +28,7 @@ lint: $(COMMANDS)
 
 test:
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-pristine.sh
+	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-update.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/fail-non-git.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/git-root.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/idempotent-bootstrap.sh
