@@ -5,6 +5,7 @@ REVISION="$VENDORPULL_REVISION"
 set -o nounset
 
 %include "assert.sh"
+%include "dependencies.sh"
 %include "vcs/git.sh"
 
 vendorpull_assert_command 'git'
@@ -50,10 +51,8 @@ fi
 # to install in order to not cause unpredictable results.
 git -C "$TEMPORARY_DIRECTORY" checkout "$HASH"
 
-# TODO: We should perform an upgrade here if vendorpull already exists
-# in the dependencies file
 echo "Creating DEPENDENCIES files..."
-echo "vendorpull $VENDORPULL_REPOSITORY $HASH" > "$DEPENDENCIES_FILE"
+vendorpull_dependency_set "$DEPENDENCIES_FILE" vendorpull "$VENDORPULL_REPOSITORY" "$HASH"
 
 # After vendorpull has been declared in the repo, run a full update
 echo "Pulling dependencies ..."
