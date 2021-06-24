@@ -19,16 +19,6 @@ DEPENDENCIES_FILE="$INSTALLATION_DIRECTORY/DEPENDENCIES"
 # TODO: We should find a way to make this resistant to repository renames, etc.
 VENDORPULL_REPOSITORY="https://github.com/jviotti/vendorpull"
 
-# TODO: If this is the case, then we should do an upgrade instead, once
-# we support an "upgrade" command on the main vendorpull script
-if [ -f "$DEPENDENCIES_FILE" ]
-then
-  echo "It seems that there is an existing dependencies manifest at:" 1>&2
-  echo "  $DEPENDENCIES_FILE" 1>&2
-  echo "If this is an error, remove this file and try again" 1>&2
-  exit 1
-fi
-
 %include "tmpdir.sh"
 
 # Clone the latest available version of vendorpull to perform
