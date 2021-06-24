@@ -121,9 +121,9 @@ vendorpull_dependencies_find() {
   if [ ! -f "$1" ]
   then
     echo ""
+  else
+    grep "^$2" < "$1" | head -n 1
   fi
-
-  grep "^$2" < "$1" | head -n 1
 }
 
 # @params [string] Path to DEPENDENCIES file
@@ -140,9 +140,9 @@ vendorpull_dependencies_find_exact() {
   if [ ! -f "$1" ]
   then
     echo ""
+  else
+    grep "^$2 " < "$1" | head -n 1
   fi
-
-  grep "^$2 " < "$1" | head -n 1
 }
 
 # @params [string] Path to DEPENDENCIES file
@@ -155,8 +155,15 @@ vendorpull_dependency_set() {
   then
     echo "$2 $3 $4" >> "$1"
   else
-    sed -i .bak "s#^$2 .*#$2 $3 $4#" "$1"
-    rm "$1.bak"
+    # Use a delimiter other than the slash
+    # in case the dependency name contains one
+    if [ "$(uname)" = "Darwin" ]
+    then
+      sed -i .bak "s|^$2 .*|$2 $3 $4|" "$1"
+      rm "$1.bak"
+    else
+      sed -i "s|^$2 .*|$2 $3 $4|" "$1"
+    fi
   fi
 }
 
