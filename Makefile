@@ -8,6 +8,7 @@ HEADERS = include/assert.sh \
 					include/masker.sh \
 					include/patcher.sh \
 					include/tmpdir.sh \
+					include/dependencies.sh \
 					include/vcs/git.sh
 
 COMMANDS = bootstrap \
