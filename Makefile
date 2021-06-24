@@ -1,4 +1,4 @@
-.PHONY: build lint test
+.PHONY: build lint test clean
 .DEFAULT_GOAL = build
 
 # The current git commit hash
@@ -27,3 +27,6 @@ test:
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/patch.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/mask.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/help.sh
+
+clean:
+	rm bootstrap vendorpull
