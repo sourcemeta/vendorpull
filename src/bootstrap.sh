@@ -5,6 +5,7 @@ REVISION="$VENDORPULL_REVISION"
 set -o nounset
 
 %include "assert.sh"
+%include "vcs/git.sh"
 
 vendorpull_assert_command 'git'
 
@@ -34,7 +35,7 @@ fi
 # Clone the latest available version of vendorpull to perform
 # the initial dependencies installation
 echo "Cloning vendorpull..."
-git clone "$VENDORPULL_REPOSITORY" "$TEMPORARY_DIRECTORY"
+vendorpull_clone_git "$VENDORPULL_REPOSITORY" "$TEMPORARY_DIRECTORY" HEAD
 
 if [ -n "$REVISION" ]
 then
