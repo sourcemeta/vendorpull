@@ -23,7 +23,7 @@ COMMANDS = bootstrap \
 build: $(COMMANDS)
 
 lint: $(COMMANDS)
-	shellcheck $^ test/*.sh
+	shellcheck $^ test/*.sh .github/*.sh
 
 test:
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-pristine.sh
