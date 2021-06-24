@@ -4,7 +4,10 @@
 # @params [string] Revision
 vendorpull_clone_git() {
   git clone --recurse-submodules --jobs 8 "$1" "$2"
-  git -C "$2" reset --hard "$3"
+  if [ "$3" != "HEAD" ]
+  then
+    git -C "$2" reset --hard "$3"
+  fi
 }
 
 # Un-git the repository and its dependencies (if any)
