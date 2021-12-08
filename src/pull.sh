@@ -15,16 +15,15 @@ set -o nounset
 # @params [string] Dependency definition
 vendorpull_command_pull() {
   NAME="$(vendorpull_dependencies_name "$2")"
-  REPOSITORY="$(vendorpull_dependencies_repository "$2")"
+  URL="$(vendorpull_dependencies_repository "$2")"
   REVISION="$(vendorpull_dependencies_revision "$2")"
 
   echo "Updating $NAME..."
-
-  GIT_REPOSITORY_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
-  vendorpull_clone_git "$REPOSITORY" "$GIT_REPOSITORY_DIRECTORY" "$REVISION"
-  vendorpull_patch "$GIT_REPOSITORY_DIRECTORY" "$1/patches/$NAME"
-  vendorpull_clean_git "$GIT_REPOSITORY_DIRECTORY"
-  vendorpull_mask_directory "$GIT_REPOSITORY_DIRECTORY" "$1/vendor/$NAME.mask"
+  DOWNLOAD_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
+  vendorpull_clone_git "$URL" "$DOWNLOAD_DIRECTORY" "$REVISION"
+  vendorpull_patch "$DOWNLOAD_DIRECTORY" "$1/patches/$NAME"
+  vendorpull_clean_git "$DOWNLOAD_DIRECTORY"
+  vendorpull_mask_directory "$DOWNLOAD_DIRECTORY" "$1/vendor/$NAME.mask"
 
   # Atomically move the new dependency into the vendor directory
   OUTPUT_DIRECTORY="$1/vendor/$NAME"
