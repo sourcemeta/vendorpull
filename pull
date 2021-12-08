@@ -34,6 +34,29 @@ vendorpull_assert_file() {
     vendorpull_fail "No such file: $1"
   fi
 }
+TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
+echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
+temporary_directory_clean() {
+  rm -rf "$TEMPORARY_DIRECTORY"
+}
+trap temporary_directory_clean EXIT
+# Check if a URL is a git URL
+# @params [string] URL
+vendorpull_is_git() {
+  case $1 in
+    # Some heuristics
+    "git@"*) return 0 ;;
+    *".git") return 0 ;;
+    *)
+      # The brute-force approach
+      git clone --depth 1 "$1" "$TEMPORARY_DIRECTORY/git-test" 2> /dev/null \
+        && EXIT_CODE="$?" || EXIT_CODE="$?"
+      rm -rf "$TEMPORARY_DIRECTORY/git-test"
+      test "$EXIT_CODE" != "0" && return 1
+      return 0 ;;
+  esac
+}
+
 # Clone a git repository
 # @params [string] Git URL
 # @params [string] Clone location
@@ -62,6 +85,25 @@ vendorpull_clean_git() {
 vendorpull_patch_git() {
   git -C "$1" apply --3way "$2"
 }
+# Download a file over HTTP
+# @params [string] HTTP URL
+# @params [string] Download location
+vendorpull_clone_http() {
+  curl --location --retry 5 --output "$2" "$1"
+}
+
+# Validate a file against its MD5 checksum
+# @params [string] File path
+# @params [string] MD5 hash
+vendorpull_clone_checksum() {
+  md5sum "$1"
+  NAME="$(basename "$1")"
+  # This has to be two spaces to match md5sum(1)
+  echo "$REVISION  $NAME" > "$TEMPORARY_DIRECTORY/$NAME.md5"
+  cd "$(dirname "$1")"
+  md5sum --check "$TEMPORARY_DIRECTORY/$NAME.md5"
+  cd - > /dev/null
+}
 # Mask a directory with a set of patterns
 # @params [string] Input directory
 # @params [string] Mask file
@@ -88,12 +130,6 @@ vendorpull_patch() {
     done
   fi
 }
-TEMPORARY_DIRECTORY="$(mktemp -d -t vendorpull-clone-XXXXX)"
-echo "Setting up temporary directory at $TEMPORARY_DIRECTORY..."
-temporary_directory_clean() {
-  rm -rf "$TEMPORARY_DIRECTORY"
-}
-trap temporary_directory_clean EXIT
 # @params [string] Dependency definition
 vendorpull_dependencies_name() {
   RESULT="$(echo "$1" | cut -d ' ' -f 1)"
@@ -175,17 +211,24 @@ vendorpull_command_pull() {
   REVISION="$(vendorpull_dependencies_revision "$2")"
 
   echo "Updating $NAME..."
-  DOWNLOAD_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
-  vendorpull_clone_git "$URL" "$DOWNLOAD_DIRECTORY" "$REVISION"
-  vendorpull_patch "$DOWNLOAD_DIRECTORY" "$1/patches/$NAME"
-  vendorpull_clean_git "$DOWNLOAD_DIRECTORY"
-  vendorpull_mask_directory "$DOWNLOAD_DIRECTORY" "$1/vendor/$NAME.mask"
+  DOWNLOAD_LOCATION="$TEMPORARY_DIRECTORY/$NAME"
+
+  if vendorpull_is_git "$URL"
+  then
+    vendorpull_clone_git "$URL" "$DOWNLOAD_LOCATION" "$REVISION"
+    vendorpull_patch "$DOWNLOAD_LOCATION" "$1/patches/$NAME"
+    vendorpull_clean_git "$DOWNLOAD_LOCATION"
+    vendorpull_mask_directory "$DOWNLOAD_LOCATION" "$1/vendor/$NAME.mask"
+  else
+    vendorpull_clone_http "$URL" "$DOWNLOAD_LOCATION"
+    vendorpull_clone_checksum "$DOWNLOAD_LOCATION" "$REVISION"
+  fi
 
   # Atomically move the new dependency into the vendor directory
   OUTPUT_DIRECTORY="$1/vendor/$NAME"
   rm -rf "$OUTPUT_DIRECTORY"
   mkdir -p "$(dirname "$OUTPUT_DIRECTORY")"
-  mv "$TEMPORARY_DIRECTORY/$NAME" "$OUTPUT_DIRECTORY"
+  mv "$DOWNLOAD_LOCATION" "$OUTPUT_DIRECTORY"
 }
 
 vendorpull_assert_command 'git'

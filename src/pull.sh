@@ -5,10 +5,11 @@ PATTERN="$1"
 set -o nounset
 
 %include "assert.sh"
+%include "tmpdir.sh"
 %include "vcs/git.sh"
+%include "vcs/http.sh"
 %include "masker.sh"
 %include "patcher.sh"
-%include "tmpdir.sh"
 %include "dependencies.sh"
 
 # @params [string] Base directory
@@ -19,17 +20,24 @@ vendorpull_command_pull() {
   REVISION="$(vendorpull_dependencies_revision "$2")"
 
   echo "Updating $NAME..."
-  DOWNLOAD_DIRECTORY="$TEMPORARY_DIRECTORY/$NAME"
-  vendorpull_clone_git "$URL" "$DOWNLOAD_DIRECTORY" "$REVISION"
-  vendorpull_patch "$DOWNLOAD_DIRECTORY" "$1/patches/$NAME"
-  vendorpull_clean_git "$DOWNLOAD_DIRECTORY"
-  vendorpull_mask_directory "$DOWNLOAD_DIRECTORY" "$1/vendor/$NAME.mask"
+  DOWNLOAD_LOCATION="$TEMPORARY_DIRECTORY/$NAME"
+
+  if vendorpull_is_git "$URL"
+  then
+    vendorpull_clone_git "$URL" "$DOWNLOAD_LOCATION" "$REVISION"
+    vendorpull_patch "$DOWNLOAD_LOCATION" "$1/patches/$NAME"
+    vendorpull_clean_git "$DOWNLOAD_LOCATION"
+    vendorpull_mask_directory "$DOWNLOAD_LOCATION" "$1/vendor/$NAME.mask"
+  else
+    vendorpull_clone_http "$URL" "$DOWNLOAD_LOCATION"
+    vendorpull_clone_checksum "$DOWNLOAD_LOCATION" "$REVISION"
+  fi
 
   # Atomically move the new dependency into the vendor directory
   OUTPUT_DIRECTORY="$1/vendor/$NAME"
   rm -rf "$OUTPUT_DIRECTORY"
   mkdir -p "$(dirname "$OUTPUT_DIRECTORY")"
-  mv "$TEMPORARY_DIRECTORY/$NAME" "$OUTPUT_DIRECTORY"
+  mv "$DOWNLOAD_LOCATION" "$OUTPUT_DIRECTORY"
 }
 
 vendorpull_assert_command 'git'

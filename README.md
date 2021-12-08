@@ -40,8 +40,8 @@ Platform support
 ----------------
 
 `vendorpull` runs in any POSIX system such as GNU/Linux, macOS, FreeBSD, etc.
-Its only external dependency is `git`. `vendorpull` can be run in Microsoft
-Windows through the [Windows Subsystem for
+Its only external dependencies are `git`, `curl` and `md5sum`. `vendorpull` can
+be run in Microsoft Windows through the [Windows Subsystem for
 Linux](https://docs.microsoft.com/en-us/windows/wsl/) or
 [MinGW](https://sourceforge.net/projects/mingw/).
 
@@ -75,9 +75,10 @@ and the Electron project.
 
 - The first column defines the dependency name as it will be vendored in the
   project. The dependency is vendored inside the `vendor` directory.
-- The second column defines the repository `git` URL of the dependency
-- The third column defines the `git` revision of the project that you want to
-  vendor. It can be any `git` revision such as a commit hash, a tag, etc
+- The second column defines the repository URL of the dependency
+- The third column defines either the `git` revision of the project that you
+  want to vendor or the MD5 hash of the file if the URL does not point to a
+  `git` repository
 
 In order to pull all dependencies, run the following command:
 
@@ -123,6 +124,8 @@ contains an 8.1M `docs` directory. We can ignore this directory by creating a
 docs
 ```
 
+Masking is not available for non-`git` dependencies.
+
 Patches
 -------
 
@@ -132,6 +135,8 @@ placing a set of `*.patch` files produced with
 [`git-format-patch(1)`](http://schacon.github.io/git/git-format-patch.html)
 into a `patches/<name>` directory where `<name>` corresponds to a dependency
 name as defined in the `DEPENDENCIES` file.
+
+Patching is not available for non-`git` dependencies.
 
 GitHub integration
 ------------------

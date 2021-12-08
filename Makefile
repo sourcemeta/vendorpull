@@ -9,7 +9,8 @@ HEADERS = include/assert.sh \
 					include/patcher.sh \
 					include/tmpdir.sh \
 					include/dependencies.sh \
-					include/vcs/git.sh
+					include/vcs/git.sh \
+					include/vcs/http.sh
 
 COMMANDS = bootstrap \
 					 pull
@@ -27,6 +28,8 @@ lint: $(COMMANDS)
 	shellcheck $^ test/*.sh .github/*.sh
 
 test:
+	VENDORPULL_REVISION=$(GIT_REVISION) ./test/file-download.sh
+	VENDORPULL_REVISION=$(GIT_REVISION) ./test/file-download-hash-mismatch.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-pristine.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/bootstrap-update.sh
 	VENDORPULL_REVISION=$(GIT_REVISION) ./test/fail-non-git.sh
