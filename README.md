@@ -95,9 +95,10 @@ You can also pull a single dependency by specifying its name as the first argume
 Updating
 --------
 
-`vendorpull` is managed using `vendorpull` itself. Therefore you can update
-`vendorpull` by updating the `vendorpull` revision from the `DEPENDENCIES` file
-and running the following command:
+`vendorpull` is managed using `vendorpull` itself and follows the
+[live-at-head](https://github.com/abseil/abseil-cpp#releases) philosophy.
+Therefore you can update `vendorpull` by updating the `vendorpull` revision
+from the `DEPENDENCIES` file and running the following command:
 
 ```sh
 ./vendor/vendorpull/pull vendorpull
