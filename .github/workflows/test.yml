@@ -1,35 +1,10 @@
-name: Test
+name: CI
 
 on: [ push ]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-latest ]
-
-    runs-on: ${{ matrix.os }}
+  lint:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Dependencies (macOS)
-      if: runner.os == 'macos'
-      run: brew install shellcheck gpp coreutils
-    - name: Dependencies (GNU/Linux)
-      if: runner.os == 'linux'
-      run: sudo apt install -y gpp
-
-    - name: Clean
-      run: make clean
-
-    - name: Build
-      run: make
-
-    - name: Lint
-      run: make lint
-
-    - name: Test
-      run: make test
-
-    - name: Check that there are no uncommitted changes
-      run: ./.github/no-staged-uncommitted-files.sh
+      - uses: actions/checkout@v2
+      - run: shellcheck pull bootstrap
