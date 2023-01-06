@@ -5,7 +5,7 @@ set -o nounset
 
 ROOT="$(git rev-parse --show-toplevel)"
 DEPENDENCIES="$ROOT/DEPENDENCIES"
-URL="https://github.com/jviotti/vendorpull"
+URL="https://github.com/sourcemeta/vendorpull"
 
 TMP="$(mktemp -d -t vendorpull-install-XXXXX)"
 clean() { rm -rf "$TMP"; }
