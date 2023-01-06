@@ -63,6 +63,7 @@ vendor() {
   # Swap
   log "Moving $4/$1 to $VENDOR/$1"
   rm -rf "$VENDOR/${1:?}"
+  mkdir -p "$VENDOR"
   mv "$4/$1" "$VENDOR/$1"
 }
 
