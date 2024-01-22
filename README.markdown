@@ -124,6 +124,10 @@ contains an 8.1M `docs` directory. We can ignore this directory by creating a
 docs
 ```
 
+If you do not provide a `.mask` file on the project consuming the dependency,
+vendorpull will look for a *default* mask file called `vendorpull.mask` at the
+top level of the project you are vendoring.
+
 Patches
 -------
 
