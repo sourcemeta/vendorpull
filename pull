@@ -91,7 +91,15 @@ then
     fail "Unknown dependency: $DEPENDENCY"
   fi
   NAME="$(echo "$LINE" | cut -d ' ' -f 1)"
-  URL="$(echo "$LINE" | cut -d ' ' -f 2)"
+
+  PULL_LOCATION="${2-}"
+  if [ -n "$PULL_LOCATION" ]
+  then
+    URL="$PULL_LOCATION"
+  else
+    URL="$(echo "$LINE" | cut -d ' ' -f 2)"
+  fi
+
   VERSION="$(echo "$LINE" | cut -d ' ' -f 3)"
   if [ -z "$NAME" ] || [ -z "$URL" ] || [ -z "$VERSION" ]
   then

@@ -91,6 +91,15 @@ You can also pull a single dependency by specifying its name as the first argume
 ./vendor/vendorpull/pull depot_tools
 ```
 
+When pulling a single dependency, you can provide an explicit alternative
+location to pull from as a second argument. This is particularly handy if you
+want to pull from a local directory without the overhead of hitting an external
+git server:
+
+```sh
+./vendor/vendorpull/pull my-dependency ../projects/my-dependency
+```
+
 Updating
 --------
 
