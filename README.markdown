@@ -100,6 +100,14 @@ git server:
 ./vendor/vendorpull/pull my-dependency ../projects/my-dependency
 ```
 
+For convenience, you can also update `DEPENDENCIES` to bump a specific
+dependency to the latest commit hash or tag that corresponds to `HEAD` as
+follows:
+
+```sh
+./vendor/vendorpull/upgrade my-dependency
+```
+
 Updating
 --------
 
