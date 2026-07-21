@@ -7,7 +7,7 @@ ROOT="$(git rev-parse --show-toplevel)"
 DEPENDENCIES="$ROOT/DEPENDENCIES"
 URL="https://github.com/sourcemeta/vendorpull"
 
-TMP="$(mktemp -d -t vendorpull-install-XXXXX)"
+TMP="$(mktemp -d -t vendorpull-install-XXXXXX)"
 clean() { rm -rf "$TMP"; }
 trap clean EXIT
 
