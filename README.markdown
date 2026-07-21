@@ -120,6 +120,23 @@ from the `DEPENDENCIES` file and running the following command:
 ./vendor/vendorpull/pull vendorpull
 ```
 
+File dependencies
+-----------------
+
+Apart from `git` repositories, you can vendor plain files. In this case, the
+first column defines the file path inside the `vendor` directory, the second
+column defines the URL to download the file from, and the third column defines
+the SHA-256 checksum of the file contents. For example:
+
+```
+oauth-parameters.csv https://www.iana.org/assignments/oauth-parameters/parameters.csv 6ae9ec171be0d232ee4e267a90d3adb301a75ceac74c2eb6478294139ec55d34
+```
+
+Masking and patches do not apply to file dependencies.
+
+Running the `upgrade` command on a file dependency downloads the current
+contents of the URL and updates the checksum accordingly.
+
 Masking
 -------
 
